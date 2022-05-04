@@ -33,7 +33,7 @@ spec:
         find $(workspaces.export.path)
       env:
         - name: KUBECONFIG
-          value: $(workspaces.kubeconfig.path)/kubeconfig
+          value: $(workspaces.kubeconfig.path)/config
   workspaces:
     - name: export
       description: |

@@ -7,7 +7,7 @@ spec:
     - name: src-namespace
       value: guestbook
     - name: src-context
-      value: src
+      value: admin
   pipelineSpec:
     # All the parameters used by this pipeline
     params:
