@@ -5,7 +5,7 @@ metadata:
 spec:
   params:
     - name: src-namespace
-      value: guestbook
+      value: testproject
     - name: src-context
       value: admin
   pipelineSpec:
@@ -81,7 +81,7 @@ spec:
           kind: ClusterTask
         params:
           - name: dest-namespace
-            value: "$(context.pipelineRun.namespace)"
+            value: "$(params.src-namespace)"
         workspaces:
           - name: apply
             workspace: shared-data
