@@ -18,37 +18,62 @@ spec:
       image: quay.io/konveyor/crane-runner:latest
       script: |
         # Make common base directory
+
         kustomize_base_dir="$(workspaces.kustomize.path)/$(params.dest-namespace)/base"
+
         mkdir -p ${kustomize_base_dir}
 
+
         # Fill in base kustomization.yaml
+
         base_kustomization="${kustomize_base_dir}/kustomization.yaml"
-        echo "apiVersion: kustomize.config.k8s.io/v1beta1" > "${base_kustomization}"
+
+        echo "apiVersion: kustomize.config.k8s.io/v1beta1" >
+        "${base_kustomization}"
+
         echo "kind: Kustomization" >> "${base_kustomization}"
+
         echo "" >> "${base_kustomization}"
+
         echo "resources:" >> "${base_kustomization}"
+
         # Find the resources from the apply step
+
         yamls=$(find $(workspaces.apply.path)/resources -type f -name \*.yaml)
+
         for yaml in ${yamls}; do
           cp ${yaml} ${kustomize_base_dir}
           file=$(basename "${yaml}")
           echo "- ${file}" >> "${base_kustomization}"
         done
+
         cat "${base_kustomization}"
 
+
         # Fill in kustomization.yaml
-        kustomization="$(workspaces.kustomize.path)/kustomization.yaml"
+
+        kustomization="$(workspaces.kustomize.path)/$(params.dest-namespace)/kustomization.yaml"
+
         echo "apiVersion: kustomize.config.k8s.io/v1beta1" > "${kustomization}"
+
         echo "kind: Kustomization" >> "${kustomization}"
+
         echo "" >> "${kustomization}"
+
         echo "namespace: $(params.dest-namespace)" >> "${kustomization}"
+
         echo "" >> "${kustomization}"
+
         echo "resources:" >> "${kustomization}"
+
         echo "- base/" >> "${kustomization}"
+
         cat "${kustomization}"
 
+
         # Verify it builds
-        kustomize build $(workspaces.kustomize.path)/
+
+        kustomize build $(workspaces.kustomize.path)/$(params.dest-namespace)
   # https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md#using-workspaces-in-tasks
   workspaces:
     - name: apply
