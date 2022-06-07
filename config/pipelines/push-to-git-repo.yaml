@@ -1,0 +1,49 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: push-to-git-repo
+  namespace: pipeline-test
+spec:
+  tasks:
+    - name: git-clone-v0-22-0
+      params:
+        - name: url
+          value: 'https://github.com/taiseerhussein/namespaces.git'
+        - name: revision
+          value: main
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: app-source
+    - name: prep-git-repo
+      params:
+        - name: projectname
+          value: file-uploader
+        - name: verbose
+          value: 'true'
+      runAfter:
+        - git-clone-v0-22-0
+      taskRef:
+        kind: Task
+        name: prep-git-repo
+      workspaces:
+        - name: output
+          workspace: app-source
+  workspaces:
+    - name: app-source
+

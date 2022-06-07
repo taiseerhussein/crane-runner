@@ -3,5 +3,5 @@ kind: Kustomization
 commonLabels:
   app: crane-runner
 resources:
-  - pipeline-export.yaml 
-  - push-to-git-repo.yaml
+  - git-clone.yaml
+  - prep-git-repo.yaml

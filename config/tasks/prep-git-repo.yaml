@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: prep-git-repo
+  namespace: pipeline-test
+spec:
+  params:
+    - name: projectname
+      type: string
+    - default: 'true'
+      description: log the commands used during execution
+      name: verbose
+      type: string
+    - default: >-
+        registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
+      description: the image used where the git-init binary is
+      name: gitInitImage
+      type: string
+  steps:
+    - image: $(params.gitInitImage)
+      name: 'prep-git-repo'
+      resources: {}
+      script: |
+        #!/bin/sh
+        set -eu -o pipefail
+
+        if [[ "$(params.verbose)" == "true" ]] ; then
+          set -x
+        fi
+
+        CHECKOUT_DIR="$(workspaces.output.path)/$(params.projectname)"
+
+        mkdir "$CHECKOUT_DIR"
+
+        sleep 60
+  workspaces:
+    - description: The git repo will be cloned onto the volume backing this workspace
+      name: output
+
